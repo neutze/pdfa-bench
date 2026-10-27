@@ -1,0 +1,42 @@
+#!/usr/bin/env bash
+# pdfa-bench — the whole experiment in one command.
+#
+#   ./pdfa-bench            build the image on first start, run every lane, print the tables
+#   ./pdfa-bench --rebuild  rebuild the image first (after changing code or versions.env)
+#   ./pdfa-bench selftest   run the self-test inside the image
+#   ./pdfa-bench list       show the lanes and what each needs
+#
+# The first start fetches every dependency (Ghostscript source, veraPDF, PDFBox, Kotlin, Python
+# packages, veraPDF's test corpus), pinned in versions.env. Results land in ./results
+# (override with PDFA_BENCH_RESULTS). Needs Podman or Docker.
+set -euo pipefail
+here=$(cd "$(dirname "$0")" && pwd)
+version=$(sed -n 's/^__version__ = "\(.*\)"/\1/p' "$here/src/pdfa_bench/__init__.py")
+image="pdfa-bench:$version"
+
+engine=${PDFA_BENCH_ENGINE:-$(command -v podman || command -v docker || true)}
+if [ -z "$engine" ]; then
+  echo "pdfa-bench needs Podman or Docker" >&2
+  exit 1
+fi
+if [ "$(basename "$engine")" = podman ] && [ "$(uname -s)" = Darwin ]; then
+  "$engine" machine inspect --format '{{.State}}' 2>/dev/null | grep -q running || "$engine" machine start
+fi
+
+rebuild=0
+if [ "${1:-}" = "--rebuild" ]; then rebuild=1; shift; fi
+if [ "$rebuild" = 1 ] || ! "$engine" image inspect "$image" >/dev/null 2>&1; then
+  build_args=()
+  while IFS='=' read -r key value; do
+    [[ $key =~ ^[A-Z_0-9]+$ ]] && build_args+=(--build-arg "$key=$value")
+  done < "$here/versions.env"
+  echo "building $image — first start fetches Ghostscript, veraPDF, PDFBox, Kotlin, Python packages and the test corpus"
+  "$engine" build "${build_args[@]}" -t "$image" "$here"
+fi
+
+out=${PDFA_BENCH_RESULTS:-$here/results}
+mkdir -p "$out"
+tty=()
+[ -t 1 ] && tty=(-t)
+# ${tty[@]+...}: macOS's /bin/bash 3.2 treats an empty array as unset under `set -u`.
+exec "$engine" run --rm ${tty[@]+"${tty[@]}"} -v "$out:/out" -e PDFA_BENCH_RESULTS_HOST="$out" "$image" "$@"

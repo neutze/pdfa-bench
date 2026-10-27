@@ -1,0 +1,9 @@
+results/
+results-*/
+.jvm/
+.cache/
+__pycache__/
+*.pyc
+.DS_Store
+*.log
+.claude/worktrees/

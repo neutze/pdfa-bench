@@ -1,0 +1,7 @@
+# Python dependencies, pinned. The image installs exactly these; locally any recent versions work.
+pikepdf==10.5.1
+pymupdf==1.27.2.2
+numpy==2.4.3
+pillow==12.1.1
+img2pdf==0.6.3
+ocrmypdf==17.11.0

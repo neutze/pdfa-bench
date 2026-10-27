@@ -1,0 +1,19 @@
+pdfa-bench is MIT-licensed (see LICENSE). The container image it builds downloads and bundles
+third-party software and data, each under its own licence. Nothing below is modified.
+
+- Ghostscript (Artifex Software) — AGPL-3.0. Built unmodified from the official source tarball
+  named in versions.env: https://github.com/ArtifexSoftware/ghostpdl-downloads
+- veraPDF — GPL-3.0-or-later or MPL-2.0. https://verapdf.org
+- veraPDF test corpus, PDF_A-2b part — CC BY 4.0, (c) veraPDF Consortium.
+  https://github.com/veraPDF/veraPDF-corpus (commit pinned in versions.env)
+- Apache PDFBox, FontBox, XMPBox — Apache-2.0. https://pdfbox.apache.org
+- Apache Commons Logging — Apache-2.0.
+- Kotlin compiler and standard library — Apache-2.0 (the standard library is included in the stamper jar).
+- Eclipse Temurin JRE — GPL-2.0 with Classpath Exception.
+- OCRmyPDF — MPL-2.0. pikepdf — MPL-2.0. qpdf — Apache-2.0.
+- PyMuPDF / MuPDF — AGPL-3.0 (Artifex Software).
+- poppler-utils — GPL-2.0-or-later. Tesseract — Apache-2.0. DejaVu fonts — Bitstream Vera licence.
+- NumPy — BSD-3-Clause. Pillow — MIT-CMU. img2pdf — LGPL-3.0-or-later.
+
+Distributing the built image means distributing these components; the AGPL and GPL components
+require making their corresponding source available, which the URLs above provide.

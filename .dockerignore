@@ -1,0 +1,6 @@
+results/
+results-*/
+.jvm/
+.cache/
+.git/
+**/__pycache__/
